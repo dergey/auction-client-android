@@ -9,4 +9,5 @@
 
     <string name="tab_item_home">home</string>
     <string name="tab_item_categories">categories</string>
+    <string name="title_activity_lot_description">categories</string>
 </resources>

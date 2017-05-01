@@ -6,8 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.zhuravlev.sergey.remindme.R;
 import com.zhuravlev.sergey.remindme.dto.LotDTO;
+
 import java.util.List;
 
 public class LotListAdapter extends RecyclerView.Adapter<LotListAdapter.LotViewHolder> {
