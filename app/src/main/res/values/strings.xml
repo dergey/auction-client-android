@@ -1,15 +1,12 @@
 <resources>
-    <string name="app_name">RemindMe Beta</string>
+    <string name="app_name">Online Auction</string>
     <string name="search_title">Search</string>
-    
+
     <string name="menu_item_notification">Notification</string>
-    
-    <string name="view_navigation_open">Open</string>
-    <string name="view_navigation_close">Close</string>
 
-    <string name="tab_item_history">history</string>
-    <string name="tab_item_ideas">ideas</string>
-    <string name="tab_item_todo">todo</string>
-    <string name="tab_item_birthdays">birthdays</string>
+    <string name="view_navigation_open" translatable="false">Open</string>
+    <string name="view_navigation_close" translatable="false">Close</string>
 
+    <string name="tab_item_home">home</string>
+    <string name="tab_item_categories">categories</string>
 </resources>

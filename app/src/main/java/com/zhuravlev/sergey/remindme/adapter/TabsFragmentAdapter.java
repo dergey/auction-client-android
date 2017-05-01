@@ -5,12 +5,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.zhuravlev.sergey.remindme.R;
 import com.zhuravlev.sergey.remindme.fragment.AbstractTabFragment;
-import com.zhuravlev.sergey.remindme.fragment.BirthdaysFragment;
-import com.zhuravlev.sergey.remindme.fragment.HistoryFragment;
-import com.zhuravlev.sergey.remindme.fragment.IdeasFragment;
-import com.zhuravlev.sergey.remindme.fragment.TodoFragment;
+import com.zhuravlev.sergey.remindme.fragment.HomeFragment;
+import com.zhuravlev.sergey.remindme.fragment.CategoriesFragment;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +15,7 @@ import java.util.Map;
 public class TabsFragmentAdapter extends FragmentPagerAdapter{
 
     private Map<Integer, AbstractTabFragment> tabs;
-    private Context context;
+    private Context context; //Экземпляр MainActivity, наследника AppCompatActivity
 
     public TabsFragmentAdapter(Context context, FragmentManager fm) {
         super(fm);
@@ -43,9 +40,7 @@ public class TabsFragmentAdapter extends FragmentPagerAdapter{
 
     private void initTabsMap(Context context) {
         tabs = new HashMap<>();
-        tabs.put(0, HistoryFragment.getInstance(context));
-        tabs.put(1, IdeasFragment.getInstance(context));
-        tabs.put(2, TodoFragment.getInstance(context));
-        tabs.put(3, BirthdaysFragment.getInstance(context));
+        tabs.put(0, HomeFragment.getInstance(context));
+        tabs.put(1, CategoriesFragment.getInstance(context));
     }
 }

@@ -3,22 +3,22 @@ package com.zhuravlev.sergey.remindme.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.zhuravlev.sergey.remindme.R;
 
-public class HistoryFragment extends AbstractTabFragment {
+public class CategoriesFragment extends AbstractTabFragment {
+
     private static final int LAYOUT = R.layout.fragment_example;
 
-    public static HistoryFragment getInstance(Context context) {
+    public static CategoriesFragment getInstance(Context context) {
         Bundle args = new Bundle();
-        HistoryFragment fragment = new HistoryFragment();
+        CategoriesFragment fragment = new CategoriesFragment();
         fragment.setArguments(args);
         fragment.setContext(context);
-        fragment.setTitle(context.getString(R.string.tab_item_history));
+        fragment.setTitle(context.getString(R.string.tab_item_categories));
 
         return fragment;
     }
@@ -33,5 +33,4 @@ public class HistoryFragment extends AbstractTabFragment {
         view = inflater.inflate(LAYOUT, container, false);
         return view;
     }
-
 }
