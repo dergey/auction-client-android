@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
         setTheme(R.style.AppDefault);
         super.onCreate(savedInstanceState);
         setContentView(LAYOUT);
-
         initToolbar();
         initNavigationView();
         initTabs();
