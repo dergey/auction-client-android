@@ -1,4 +1,4 @@
-package com.zhuravlev.sergey.remindme.fragment;
+package com.zhuravlev.sergey.auction.fragment;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;

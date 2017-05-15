@@ -1,4 +1,4 @@
-package com.zhuravlev.sergey.remindme.fragment;
+package com.zhuravlev.sergey.auction.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.zhuravlev.sergey.remindme.R;
+import com.zhuravlev.sergey.auction.R;
 
 public class CategoriesFragment extends AbstractTabFragment {
 
