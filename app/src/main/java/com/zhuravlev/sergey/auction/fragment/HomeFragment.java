@@ -1,28 +1,24 @@
 package com.zhuravlev.sergey.auction.fragment;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.zhuravlev.sergey.auction.R;
-import com.zhuravlev.sergey.auction.adapter.LotListAdapter;
-import com.zhuravlev.sergey.auction.dto.Lot;
+import com.zhuravlev.sergey.auction.client.Client;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.http.ResponseEntity;
 
 public class HomeFragment extends AbstractTabFragment {
     private static final int LAYOUT = R.layout.fragment_home;
 
-    //TODO REFACTOR THIS SHIT
-    private List<Lot> data;
-    private LotListAdapter listAdapter;
-
+    //TODO Перенести класс-одиночку в главное активити
+    Client client;
 
     public static HomeFragment getInstance(Context context) {
         Bundle args = new Bundle();
@@ -30,7 +26,6 @@ public class HomeFragment extends AbstractTabFragment {
         fragment.setArguments(args);
         fragment.setContext(context);
         fragment.setTitle(context.getString(R.string.tab_item_home));
-
         return fragment;
     }
 
@@ -42,20 +37,25 @@ public class HomeFragment extends AbstractTabFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(LAYOUT, container, false);
-
-        data = new ArrayList<>();
-
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-
-        listAdapter = new LotListAdapter(data);
-        recyclerView.setAdapter(listAdapter);
+        client = Client.getInstance();
+        new loginTask().execute();
         return view;
     }
 
-    public void setLotList(List<Lot> lot){
-        data.addAll(lot);
-        listAdapter.notifyDataSetChanged();
+
+    private class loginTask extends AsyncTask<Void, Void, ResponseEntity> {
+
+        @Override
+        protected ResponseEntity doInBackground (Void... voids) {
+            client.login("dergey","12345678");
+            return client.test();
+        }
+
+        @Override
+        protected void onPostExecute(ResponseEntity response) {
+            if (response.hasBody()) Log.d("Auction.Login", "Тело ответа: " + response.getBody());
+                else Log.d("Auction.Login", "Нет тела");
+        }
     }
 
 }

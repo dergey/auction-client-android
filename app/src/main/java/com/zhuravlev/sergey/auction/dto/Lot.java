@@ -2,36 +2,33 @@ package com.zhuravlev.sergey.auction.dto;
 
 public class Lot {
 
-    private String id;
-    private String title, description;
+    private Long id;
+    private String title;
+    private String description;
     private Double price;
+    private Double bid;
     private String currency;
     private String image;
-    private Client creator;
+    private User   owner;
     private Category category;
 
     public Lot() {
     }
 
-    public String getId() {
+    public Lot(String title, String description, Double price, String currency, String image) {
+        this.title = title;
+        this.description = description;
+        this.price = price;
+        this.currency = currency;
+        this.image = image;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
-    }
-
-    public Lot(String title, String description, Double price) {
-        this.title = title;
-        this.description = description;
-        this.price = price;
-    }
-
-    public Lot(String title, String description, String image, Double price) {
-        this.title = title;
-        this.description = description;
-        this.price = price;
-        this.image = image;
     }
 
     public String getTitle() {
@@ -58,6 +55,14 @@ public class Lot {
         this.price = price;
     }
 
+    public Double getBid() {
+        return bid;
+    }
+
+    public void setBid(Double bid) {
+        this.bid = bid;
+    }
+
     public String getCurrency() {
         return currency;
     }
@@ -74,12 +79,19 @@ public class Lot {
         this.image = image;
     }
 
-    public Client getCreator() {
-        return creator;
+    public User getOwner() {
+        return owner;
     }
 
-    public void setCreator(Client creator) {
-        this.creator = creator;
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 }

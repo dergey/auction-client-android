@@ -1,6 +1,7 @@
 package com.zhuravlev.sergey.auction.adapter;
 
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,7 +22,7 @@ public class LotListAdapter extends RecyclerView.Adapter<LotListAdapter.LotViewH
 
     // ---------------------------------------------------------------------------------------------
 
-    public static class LotViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    static class LotViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         CardView cardView;
         ImageView image;
         TextView title, price;
@@ -45,6 +46,8 @@ public class LotListAdapter extends RecyclerView.Adapter<LotListAdapter.LotViewH
             intent.putExtra("description", data.getDescription());
             intent.putExtra("price", data.getPrice());
             intent.putExtra("currency", data.getCurrency());
+            //TODO Error geper size
+            intent.putExtra("image", ((BitmapDrawable) image.getDrawable()).getBitmap());
             v.getContext().startActivity(intent);
         }
 
@@ -64,7 +67,7 @@ public class LotListAdapter extends RecyclerView.Adapter<LotListAdapter.LotViewH
         return new LotViewHolder(view);
     }
 
-    // Описание товара
+    // Заполнение данных Holder-a
     @Override
     public void onBindViewHolder(LotViewHolder holder, int position) {
         holder.data = data.get(position); //передали данные в Holder

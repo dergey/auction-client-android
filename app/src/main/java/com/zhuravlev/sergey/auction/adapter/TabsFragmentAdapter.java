@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.zhuravlev.sergey.auction.dto.Category;
 import com.zhuravlev.sergey.auction.dto.Lot;
 import com.zhuravlev.sergey.auction.fragment.AbstractTabFragment;
 import com.zhuravlev.sergey.auction.fragment.HomeFragment;
@@ -19,6 +20,7 @@ public class TabsFragmentAdapter extends FragmentPagerAdapter{
     private Map<Integer, AbstractTabFragment> tabs;
     private Context context; //Экземпляр MainActivity, наследника AppCompatActivity
     private HomeFragment homeFragment;
+    private CategoriesFragment categoriesFragment;
 
     public TabsFragmentAdapter(Context context, FragmentManager fm) {
         super(fm);
@@ -44,11 +46,8 @@ public class TabsFragmentAdapter extends FragmentPagerAdapter{
     private void initTabsMap(Context context) {
         tabs = new HashMap<>();
         homeFragment = HomeFragment.getInstance(context);
+        categoriesFragment = CategoriesFragment.getInstance(context);
         tabs.put(0, homeFragment);
-        tabs.put(1, CategoriesFragment.getInstance(context));
-    }
-
-    public void setLotList(List<Lot> lot) {
-        homeFragment.setLotList(lot);
+        tabs.put(1, categoriesFragment);
     }
 }
