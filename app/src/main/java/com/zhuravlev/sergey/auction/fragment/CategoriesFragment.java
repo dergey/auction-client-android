@@ -14,6 +14,7 @@ import com.zhuravlev.sergey.auction.Constants;
 import com.zhuravlev.sergey.auction.MainActivity;
 import com.zhuravlev.sergey.auction.R;
 import com.zhuravlev.sergey.auction.adapter.CategoryListAdapter;
+import com.zhuravlev.sergey.auction.client.Client;
 import com.zhuravlev.sergey.auction.dto.Category;
 
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -29,11 +30,13 @@ public class CategoriesFragment extends AbstractTabFragment {
 
     private  List<Category> data;
 
+
     CategoryListAdapter adapter;
 
     public static CategoriesFragment getInstance(Context context) {
         Bundle args = new Bundle();
         CategoriesFragment fragment = new CategoriesFragment();
+
         fragment.setArguments(args);
         fragment.setContext(context);
         fragment.setTitle(context.getString(R.string.tab_item_categories));
@@ -43,6 +46,8 @@ public class CategoriesFragment extends AbstractTabFragment {
     public void setContext(Context context) {
         this.context = context;
     }
+
+
 
     @Nullable
     @Override

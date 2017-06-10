@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import com.zhuravlev.sergey.auction.adapter.LotListAdapter;
+import com.zhuravlev.sergey.auction.client.Client;
 import com.zhuravlev.sergey.auction.dto.Lot;
 
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ public class CategoryActivity extends AppCompatActivity {
 
     private List<Lot> data;
     private LotListAdapter adapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
