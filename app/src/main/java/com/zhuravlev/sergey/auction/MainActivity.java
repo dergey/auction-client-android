@@ -1,5 +1,6 @@
 package com.zhuravlev.sergey.auction;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 
 import com.zhuravlev.sergey.auction.adapter.TabsFragmentAdapter;
 import com.zhuravlev.sergey.auction.client.Client;
+import com.zhuravlev.sergey.auction.dto.User;
 
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -42,17 +44,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(LAYOUT);
         Client.createClient(this);
         client = Client.getClient();
-        client.loadSessionID();
-        if (client.IsAuthorized())
-            loadUser();
         initToolbar();
         initNavigationView();
         initTabs();
+        if (client.IsAuthorized()) {
+            ProgressDialog dialog = ProgressDialog.show(this, "",
+                    getString(R.string.loadmessage_signin), true);
+            client.loadUser(dialog);
+        }
     }
 
     @Override
     protected void onDestroy() {
-        Log.d("Auction.Login", "DESTROY!");
+        Log.d("Auction.Login", "Выход из приложения");
         client.saveSessionID();
         super.onDestroy();
     }
@@ -93,7 +97,20 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()){
                     case R.id.actionNotificationItem:
                         showNotificationTab();
+                        return true;
                 }
+
+                if (client.IsAuthorized())
+                    switch (item.getItemId()){
+                        //TODO MAIN Добавить пункты меню и их активити
+                        case R.id.actionCreateLot:
+                            //NOSING
+                            break;
+                        case R.id.actionMyProfile:
+                            showMyProfile();
+                            break;
+                    }
+                    else showLoginForm();
                 return true;
             }
         });
@@ -111,6 +128,12 @@ public class MainActivity extends AppCompatActivity {
                 logout();
             }
         });
+    }
+
+    private void showMyProfile() {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        intent.putExtra(User.class.getCanonicalName(), client.getUser());
+        startActivity(intent);
     }
 
     private void showLoginForm(){
@@ -138,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
         TextView emailView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.textView);
         TextView fullnameView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.fullNameTextView);
         ImageView imageLogout = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.imageLogout);
+
         imageLogout.setVisibility(View.VISIBLE);
         emailView.setText(client.getUser().getEmail());
         fullnameView.setVisibility(View.VISIBLE);

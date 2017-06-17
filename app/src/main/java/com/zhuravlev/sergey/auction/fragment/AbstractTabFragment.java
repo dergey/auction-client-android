@@ -17,4 +17,9 @@ public class AbstractTabFragment extends Fragment {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    @Override
+    public Context getContext() {
+        return context;
+    }
 }

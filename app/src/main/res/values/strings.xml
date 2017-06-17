@@ -28,4 +28,22 @@
     <string name="error_field_required">This field is required</string>
     <string name="password_hint">Password</string>
     <string name="login_hint">Login</string>
+    <string name="create_lot">Create lot</string>
+
+
+    <string name="edit_lot_item_menu">Edit</string>
+    <string name="delete_lot_item_menu">Delete</string>
+    <string name="regesration_firstname">Firstname</string>
+    <string name="regestration_lastname">Lastname</string>
+    <string name="regestration_aboutme">About me</string>
+    <string name="error_size">Wrong size</string>
+    <string name="email_hint">Email</string>
+    <string name="hint_password_confirm">Confirm Password</string>
+    <string name="error_password_not_match">Password not match</string>
+    <string name="error_username_is_busy">Username is busy</string>
+    <string name="error_server_password">Server rejected password</string>
+    <string name="activity_registration_name">Registration</string>
+    <string name="error_login">Wrong login or password</string>
+    <string name="loadmessage_registration">Registration. Please wait…</string>
+    <string name="loadmessage_signin">Sign in. Please wait…</string>
 </resources>

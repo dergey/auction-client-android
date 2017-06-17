@@ -36,7 +36,6 @@ public class CategoriesFragment extends AbstractTabFragment {
     public static CategoriesFragment getInstance(Context context) {
         Bundle args = new Bundle();
         CategoriesFragment fragment = new CategoriesFragment();
-
         fragment.setArguments(args);
         fragment.setContext(context);
         fragment.setTitle(context.getString(R.string.tab_item_categories));
@@ -54,45 +53,17 @@ public class CategoriesFragment extends AbstractTabFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(LAYOUT, container, false);
         data = new ArrayList<>();
-        new LoadCategoryTask().execute();
+        Client.getClient().getCategories(this);
         //тут мы находим наше View и присваеваем ему адаптер
         GridView gridView = (GridView) view.findViewById(R.id.gridView);
         adapter = new CategoryListAdapter(context, data);
         gridView.setAdapter(adapter);
-
         return view;
     }
 
     public void loadCategory(List<Category> categoryList) {
         data.addAll(categoryList);
         adapter.notifyDataSetChanged();
-    }
-
-    private class LoadCategoryTask extends AsyncTask<Void, Void, List<Category>> {
-
-        @Override
-        protected List<Category> doInBackground (Void... voids) {
-            RestTemplate template = new RestTemplate();
-            List<Category> categoryList = null;
-            template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-            try {
-                Category[] categories = template.getForObject(Constants.GET_ALL_CATEGORY, Category[].class);
-                Log.d("AuctionD", "Количество категорий: " + categories.length);
-                categoryList = Arrays.asList(categories);
-            } catch (Exception ignored) {
-                Log.d("AuctionD", "Ошибка подключения к серверу - " + ignored.getLocalizedMessage());
-                ((MainActivity) context).showConnectionError();
-            }
-            return categoryList;
-        }
-
-        @Override
-        protected void onPostExecute(List<Category> categories) {
-            if (categories != null)
-                loadCategory(categories);
-            else
-                Log.d("AuctionD", "lotList ссылается на несуществующий объект");
-        }
     }
 
 }

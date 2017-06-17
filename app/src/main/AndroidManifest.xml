@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.zhuravlev.sergey.auction">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -30,6 +26,12 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login" />
+        <activity android:name=".CreateLotsActivity" />
+        <activity android:name=".ProfileActivity" />
+        <activity
+            android:name=".BetDialogActivity"
+            android:theme="@style/Theme.AppCompat.Light.Dialog"></activity>
+        <activity android:name=".RegistrationActivity"></activity>
     </application>
 
 </manifest>

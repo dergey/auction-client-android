@@ -1,6 +1,7 @@
 package com.zhuravlev.sergey.auction;
 
-import android.os.AsyncTask;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,8 +18,6 @@ import android.widget.TextView;
 import com.zhuravlev.sergey.auction.client.Client;
 
 public class LoginActivity extends AppCompatActivity {
-
-    private UserLoginTask mAuthTask = null;
 
     private Client client;
     private TextView mUsernameView;
@@ -49,7 +48,14 @@ public class LoginActivity extends AppCompatActivity {
                 return false;
             }
         });
-
+        Button regestrtionFormButton = (Button) findViewById(R.id.regestration);
+        regestrtionFormButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), RegistrationActivity.class);
+                startActivityForResult(intent, 1);
+            }
+        });
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -59,6 +65,12 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         mLoginFormView = findViewById(R.id.login_form);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        finish();
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void attemptLogin() {
@@ -94,8 +106,9 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            mAuthTask = new UserLoginTask(username, password);
-            mAuthTask.execute();
+            ProgressDialog dialog = ProgressDialog.show(this, "",
+                    getString(R.string.loadmessage_signin), true);
+            client.login(username, password, dialog, this);
         }
     }
 
@@ -107,46 +120,10 @@ public class LoginActivity extends AppCompatActivity {
         return password.length() > 7;
     }
 
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String username;
-        private final String password;
-
-        UserLoginTask(String username, String password) {
-            this.username = username;
-            this.password = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-            try {
-                //TODO Добавить новые эксепшены с неверным логином паролем
-                client.login(username, password);
-            } catch (Exception e) {
-                return false;
-            }
-
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-
-            if (success) {
-                client.saveSessionID();
-                client.loadUser();
-                finish();
-            } else {
-             //   mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-        }
+    public void serverError() {
+        mUsernameView.setError(getString(R.string.error_login));
+        mUsernameView.requestFocus();
     }
+
 }
 

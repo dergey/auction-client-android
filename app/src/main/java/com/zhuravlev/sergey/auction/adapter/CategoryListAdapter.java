@@ -44,7 +44,6 @@ public class CategoryListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_item, parent, false);
-      //  categories.get(position).setId((long) position);
         return createView(view, categories.get(position));
     }
 
@@ -55,14 +54,13 @@ public class CategoryListAdapter extends BaseAdapter {
 
         textView.setText(category.getName());
         if (category.getImage()!= null)
-            new ImageLoader(imageView).execute(category.getImage());
+            new ImageLoader(imageView, context).execute(category.getImage());
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), CategoryActivity.class);
-                intent.putExtra("id", category.getId());
-                intent.putExtra("name", category.getName());
+                intent.putExtra(Category.class.getCanonicalName(), category);
                 view.getContext().startActivity(intent);
             }
         });
