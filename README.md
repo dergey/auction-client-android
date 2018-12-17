@@ -1,1 +1,1 @@
-#  Клиенское приложение для сервера Интрнет Аукциона.
+# Android client for [auction](https://github.com/dergey/auction-backend)
