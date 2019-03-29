@@ -54,7 +54,7 @@
                     android:background="@null"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
-                    android:src="@mipmap/ic_dots_vertical" />
+                    android:src="@drawable/ic_menu_gallery" />
 
             </LinearLayout>
 

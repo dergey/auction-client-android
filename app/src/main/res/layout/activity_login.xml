@@ -4,23 +4,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context="com.zhuravlev.sergey.auction.LoginActivity">
-
-    <!-- Login progress -->
-
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_weight="1"
-            android:background="@color/colorPrimary"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark" />
-
-    </android.support.design.widget.AppBarLayout>
+    tools:context="com.sergey.zhuravlev.auction.client.activity.LoginActivity">
 
     <ScrollView
         android:id="@+id/login_form"
@@ -58,7 +42,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/password_hint"
-                    android:imeActionId="@+id/login"
                     android:imeActionLabel="@string/action_sign_in_short"
                     android:imeOptions="actionUnspecified"
                     android:inputType="textPassword"
@@ -83,7 +66,17 @@
                     android:textStyle="bold" />
 
                 <Button
-                    android:id="@+id/regestration"
+                    android:id="@+id/sign_in_with_google_button"
+                    style="?android:textAppearanceSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_weight="1"
+                    android:text="@string/action_sign_in_with_google"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/registration"
                     style="?android:textAppearanceSmall"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
