@@ -39,7 +39,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
-import retrofit2.http.GET;
 
 public class Client {
 
@@ -183,7 +182,7 @@ public class Client {
     }
 
     public void lotList(String category, String owner, String title, Integer pageNumber, Integer pageSize, final Callback<List<ResponseLotDto>> callback) {
-        lotEndpoints.list(getBearer(), category, owner, title, pageNumber, pageSize).enqueue(callback);
+        lotEndpoints.list(getBearer(), category, owner, title, pageNumber, pageSize).enqueue(new ErrorHandlerCallback<>(callback));
     }
 
     private String getBearer() {
