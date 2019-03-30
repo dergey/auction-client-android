@@ -113,10 +113,10 @@ public class Client {
                 }));
     }
 
-    public void categoriesList(Callback<List<CategoryDto>> callback) {
+    public void categoriesList(SimpleCallback<List<CategoryDto>> callback) {
         categoryEndpoint
                 .list(getBearer())
-                .enqueue(new ErrorHandlerCallback<>(callback));
+                .enqueue(new ErrorHandlerSimpleCallback<>(callback));
     }
 
     public void imageUpload(Uri filePath, Callback<Void> callback) {

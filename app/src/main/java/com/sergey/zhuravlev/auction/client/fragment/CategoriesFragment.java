@@ -10,17 +10,13 @@ import android.widget.GridView;
 
 import com.sergey.zhuravlev.auction.client.R;
 import com.sergey.zhuravlev.auction.client.activity.ContextWithCallback;
-import com.sergey.zhuravlev.auction.client.activity.MainActivity;
 import com.sergey.zhuravlev.auction.client.adapter.CategoryListAdapter;
 import com.sergey.zhuravlev.auction.client.client.Client;
+import com.sergey.zhuravlev.auction.client.client.SimpleCallback;
 import com.sergey.zhuravlev.auction.client.dto.CategoryDto;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class CategoriesFragment extends AbstractTabFragment {
 
@@ -43,6 +39,12 @@ public class CategoriesFragment extends AbstractTabFragment {
         this.context = context;
     }
 
+    public void setCategories(List<CategoryDto> categories) {
+        data.clear();
+        data.addAll(categories);
+        adapter.notifyDataSetChanged();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(LAYOUT, container, false);
@@ -55,20 +57,15 @@ public class CategoriesFragment extends AbstractTabFragment {
         return view;
     }
 
-    public void loadCategory(List<CategoryDto> categoryList) {
-        data.addAll(categoryList);
-        adapter.notifyDataSetChanged();
-    }
-
     public void refresh() {
-        Client.getInstance().categoriesList(new Callback<List<CategoryDto>>() {
+        Client.getInstance().categoriesList(new SimpleCallback<List<CategoryDto>>() {
             @Override
-            public void onResponse(Call<List<CategoryDto>> call, Response<List<CategoryDto>> response) {
-                if (response.isSuccessful()) loadCategory(response.body());
+            public void onResponse(List<CategoryDto> response) {
+                setCategories(response);
             }
 
             @Override
-            public void onFailure(Call<List<CategoryDto>> call, Throwable t) {
+            public void onFailure(Throwable t) {
                 if (CategoriesFragment.this.getContext() != null && CategoriesFragment.this.getContext() instanceof ContextWithCallback) {
                     ((ContextWithCallback) CategoriesFragment.this.getContext()).showErrorMessage("Unable to get categories list!", t);
                 }
