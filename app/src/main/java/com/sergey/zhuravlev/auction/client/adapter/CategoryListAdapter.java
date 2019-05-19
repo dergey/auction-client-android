@@ -5,9 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Bundle;
-import android.os.Parcelable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +16,10 @@ import com.sergey.zhuravlev.auction.client.R;
 import com.sergey.zhuravlev.auction.client.activity.ContextWithCallback;
 import com.sergey.zhuravlev.auction.client.activity.LotListActivity;
 import com.sergey.zhuravlev.auction.client.client.Client;
-import com.sergey.zhuravlev.auction.client.client.ImageLoader;
 import com.sergey.zhuravlev.auction.client.dto.CategoryDto;
 import com.sergey.zhuravlev.auction.client.dto.ResponseLotDto;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -97,6 +90,7 @@ public class CategoryListAdapter extends BaseAdapter {
                                 List<ResponseLotDto> responseLotDtos = response.body();
                                 if (response.isSuccessful() && responseLotDtos != null) {
                                     Intent intent = new Intent(view.getContext(), LotListActivity.class);
+                                    intent.putExtra(LotListActivity.REQUEST_TITLE_NAME, category.getName());
                                     if (responseLotDtos.size() > 0) {
                                         intent.putParcelableArrayListExtra(LotListActivity.REQUEST_LOTS_EXTRA_NAME, new ArrayList<>(responseLotDtos));
                                     }

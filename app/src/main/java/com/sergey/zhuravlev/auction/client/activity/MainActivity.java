@@ -16,7 +16,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TabsFragmentAdapter tabsAdapter;
     private TextView emailView, nameView;
     private ImageView imageView;
+    private View loginNavigationHeader, accountNavigationHeader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,20 +55,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
 
         navigationView = findViewById(R.id.nav_view);
-        final View loginHeader = navigationView.inflateHeaderView(R.layout.login_header_main);
-        final View accountHeader = navigationView.inflateHeaderView(R.layout.account_header_main);
-        navigationView.removeHeaderView(accountHeader);
+        loginNavigationHeader = navigationView.inflateHeaderView(R.layout.login_header_main);
+        accountNavigationHeader = navigationView.inflateHeaderView(R.layout.account_header_main);
+        navigationView.removeHeaderView(accountNavigationHeader);
 
-        TextView loginView = loginHeader.findViewById(R.id.login);
-        emailView = accountHeader.findViewById(R.id.emailView);
-        nameView = accountHeader.findViewById(R.id.nameView);
-        imageView = accountHeader.findViewById(R.id.imageView);
+        TextView loginView = loginNavigationHeader.findViewById(R.id.login);
+        emailView = accountNavigationHeader.findViewById(R.id.emailView);
+        nameView = accountNavigationHeader.findViewById(R.id.nameView);
+        imageView = accountNavigationHeader.findViewById(R.id.imageView);
 
         loginView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navigationView.removeHeaderView(loginHeader);
-                navigationView.addHeaderView(accountHeader);
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivityForResult(intent, RequestActivityCodes.LOGIN_REQUEST);
             }
@@ -96,6 +94,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         initTabs();
+    }
+
+    private void toggleNavigationViewHeader(boolean authenticated) {
+        if (authenticated) {
+            if (navigationView.getHeaderView(0).equals(loginNavigationHeader)) {
+                navigationView.removeHeaderView(loginNavigationHeader);
+                navigationView.addHeaderView(accountNavigationHeader);
+            }
+        } else {
+            if (navigationView.getHeaderView(0).equals(accountNavigationHeader)) {
+                navigationView.removeHeaderView(accountNavigationHeader);
+                navigationView.addHeaderView(loginNavigationHeader);
+            }
+        }
     }
 
     @Override
@@ -174,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
         }
+        toggleNavigationViewHeader(true);
         tabsAdapter.getCategoriesFragment().refresh();
     }
 
@@ -236,10 +249,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    public void showConnectionError() {
-        Snackbar.make(drawer, R.string.error_unable_to_connect, Snackbar.LENGTH_LONG).show();
     }
 
     @Override

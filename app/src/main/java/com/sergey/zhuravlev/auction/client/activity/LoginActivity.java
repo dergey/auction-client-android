@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.sergey.zhuravlev.auction.client.R;
 import com.sergey.zhuravlev.auction.client.client.Client;
 import com.sergey.zhuravlev.auction.client.dto.ErrorDto;
@@ -161,8 +162,12 @@ public class LoginActivity extends AppCompatActivity {
                         serverError(errorDto.getMessage());
                     } else if (t instanceof SocketTimeoutException) {
                         Toast.makeText(LoginActivity.this, "Сервер недоступен", Toast.LENGTH_LONG).show();
+                    } else if (t instanceof UnrecognizedPropertyException) {
+                        Toast.makeText(LoginActivity.this, "API обновилось. Пожалуйста, обновите приложение!", Toast.LENGTH_LONG).show();
+                        Log.d("Auction.LoginActivity", "Login exception!\n" + Log.getStackTraceString(t));
                     } else {
                         Toast.makeText(LoginActivity.this, "Неизвестная ошибка подключения", Toast.LENGTH_LONG).show();
+                        Log.d("Auction.LoginActivity", "Login exception!\n" + Log.getStackTraceString(t));
                     }
                     dialog.dismiss();
                 }

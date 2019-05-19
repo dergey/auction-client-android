@@ -14,6 +14,7 @@ import com.sergey.zhuravlev.auction.client.adapter.CategoryListAdapter;
 import com.sergey.zhuravlev.auction.client.client.Client;
 import com.sergey.zhuravlev.auction.client.client.SimpleCallback;
 import com.sergey.zhuravlev.auction.client.dto.CategoryDto;
+import com.sergey.zhuravlev.auction.client.dto.PageDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,10 +59,10 @@ public class CategoriesFragment extends AbstractTabFragment {
     }
 
     public void refresh() {
-        Client.getInstance().categoriesList(new SimpleCallback<List<CategoryDto>>() {
+        Client.getInstance().categoriesList(new SimpleCallback<PageDto<CategoryDto>>() {
             @Override
-            public void onResponse(List<CategoryDto> response) {
-                setCategories(response);
+            public void onResponse(PageDto<CategoryDto> response) {
+                setCategories(response.getContent());
             }
 
             @Override
