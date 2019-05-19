@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sergey.zhuravlev.auction.client.enums.LotStatus;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -45,13 +44,13 @@ public class ResponseLotDto implements Parcelable, Serializable {
     private Date expiresAt;
 
     @JsonProperty(value = "starting_amount")
-    private BigDecimal startingAmount;
+    private Long startingAmount;
 
-    @JsonProperty(value = "currency_code")
+    @JsonProperty(value = "currency")
     private String currencyCode;
 
     @JsonProperty(value = "auction_step")
-    private BigDecimal auctionStep;
+    private Long auctionStep;
 
     @JsonProperty(value = "status")
     private LotStatus status;
@@ -74,13 +73,25 @@ public class ResponseLotDto implements Parcelable, Serializable {
         createAt = new Date(in.readLong());
         updateAt = new Date(in.readLong());
         expiresAt = new Date(in.readLong());
-        startingAmount = BigDecimal.valueOf(in.readDouble());
+        startingAmount = in.readLong();
         currencyCode = in.readString();
-        auctionStep = BigDecimal.valueOf(in.readDouble());
+        auctionStep = in.readLong();
         status = LotStatus.valueOf(in.readString());
         owner = in.readString();
         category = in.readString();
     }
+
+    public static final Creator<ResponseLotDto> CREATOR = new Creator<ResponseLotDto>() {
+        @Override
+        public ResponseLotDto createFromParcel(Parcel in) {
+            return new ResponseLotDto(in);
+        }
+
+        @Override
+        public ResponseLotDto[] newArray(int size) {
+            return new ResponseLotDto[size];
+        }
+    };
 
     @Override
     public int describeContents() {
@@ -91,15 +102,15 @@ public class ResponseLotDto implements Parcelable, Serializable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(title);
         parcel.writeString(description);
-        String[] imageArray = (String[]) images.toArray();
+        String[] imageArray = images.toArray(new String[0]);
         parcel.writeInt(imageArray.length);
         parcel.writeStringArray(imageArray);
         parcel.writeLong(createAt.getTime());
         parcel.writeLong(updateAt.getTime());
         parcel.writeLong(expiresAt.getTime());
-        parcel.writeDouble(startingAmount.doubleValue());
+        parcel.writeLong(startingAmount);
         parcel.writeString(currencyCode);
-        parcel.writeDouble(auctionStep.doubleValue());
+        parcel.writeLong(auctionStep);
         parcel.writeString(status.name());
         parcel.writeString(owner);
         parcel.writeString(category);

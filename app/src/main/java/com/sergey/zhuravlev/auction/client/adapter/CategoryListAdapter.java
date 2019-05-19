@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import com.sergey.zhuravlev.auction.client.activity.ContextWithCallback;
 import com.sergey.zhuravlev.auction.client.activity.LotListActivity;
 import com.sergey.zhuravlev.auction.client.client.Client;
 import com.sergey.zhuravlev.auction.client.dto.CategoryDto;
+import com.sergey.zhuravlev.auction.client.dto.PageDto;
 import com.sergey.zhuravlev.auction.client.dto.ResponseLotDto;
 
 import java.util.ArrayList;
@@ -83,25 +86,29 @@ public class CategoryListAdapter extends BaseAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                Client.getInstance().lotList(category.getName(), null, null, 0, 20,
-                        new Callback<List<ResponseLotDto>>() {
+                Client.getInstance().lotPage(category.getName(), null, null, 0, 20,
+                        new Callback<PageDto<ResponseLotDto>>() {
                             @Override
-                            public void onResponse(Call<List<ResponseLotDto>> call, Response<List<ResponseLotDto>> response) {
-                                List<ResponseLotDto> responseLotDtos = response.body();
+                            public void onResponse(Call<PageDto<ResponseLotDto>> call, Response<PageDto<ResponseLotDto>> response) {
+                                PageDto<ResponseLotDto> responseLotDtos = response.body();
                                 if (response.isSuccessful() && responseLotDtos != null) {
                                     Intent intent = new Intent(view.getContext(), LotListActivity.class);
                                     intent.putExtra(LotListActivity.REQUEST_TITLE_NAME, category.getName());
-                                    if (responseLotDtos.size() > 0) {
-                                        intent.putParcelableArrayListExtra(LotListActivity.REQUEST_LOTS_EXTRA_NAME, new ArrayList<>(responseLotDtos));
+                                    if (responseLotDtos.getContent().size() > 0) {
+                                        intent.putParcelableArrayListExtra(
+                                                LotListActivity.REQUEST_LOTS_EXTRA_NAME,
+                                                new ArrayList<Parcelable>(responseLotDtos.getContent()));
                                     }
                                     view.getContext().startActivity(intent);
                                 }
                             }
 
                             @Override
-                            public void onFailure(Call<List<ResponseLotDto>> call, Throwable t) {
-                                if (context instanceof ContextWithCallback)
+                            public void onFailure(Call<PageDto<ResponseLotDto>> call, Throwable t) {
+                                if (context instanceof ContextWithCallback) {
                                     ((ContextWithCallback) context).showErrorMessage(context.getString(R.string.error_unable_to_connect), t);
+                                }
+                                Log.d("Auction.CLA", Log.getStackTraceString(t));
                             }
                         });
             }

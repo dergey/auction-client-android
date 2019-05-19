@@ -26,7 +26,6 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -190,8 +189,8 @@ public class Client {
         }
     }
 
-    public void lotList(String category, String owner, String title, Integer pageNumber, Integer pageSize, final Callback<List<ResponseLotDto>> callback) {
-        lotEndpoints.list(getBearer(), category, owner, title, pageNumber, pageSize).enqueue(new ErrorHandlerCallback<>(callback));
+    public void lotPage(String category, String owner, String title, Integer page, Integer size, final Callback<PageDto<ResponseLotDto>> callback) {
+        lotEndpoints.page(getBearer(), category, owner, title, page, size).enqueue(new ErrorHandlerCallback<>(callback));
     }
 
     private String getBearer() {
