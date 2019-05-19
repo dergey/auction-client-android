@@ -59,7 +59,7 @@ public class CategoriesFragment extends AbstractTabFragment {
     }
 
     public void refresh() {
-        Client.getInstance().categoriesList(new SimpleCallback<PageDto<CategoryDto>>() {
+        Client.getInstance().categoriesPage(new SimpleCallback<PageDto<CategoryDto>>() {
             @Override
             public void onResponse(PageDto<CategoryDto> response) {
                 setCategories(response.getContent());

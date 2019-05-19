@@ -2,6 +2,7 @@ package com.sergey.zhuravlev.auction.client.client;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sergey.zhuravlev.auction.client.api.AccountEndpoint;
@@ -14,6 +15,7 @@ import com.sergey.zhuravlev.auction.client.dto.AccountRequestDto;
 import com.sergey.zhuravlev.auction.client.dto.AccountResponseDto;
 import com.sergey.zhuravlev.auction.client.dto.CategoryDto;
 import com.sergey.zhuravlev.auction.client.dto.ErrorDto;
+import com.sergey.zhuravlev.auction.client.dto.PageDto;
 import com.sergey.zhuravlev.auction.client.dto.ResponseLotDto;
 import com.sergey.zhuravlev.auction.client.dto.UserDto;
 import com.sergey.zhuravlev.auction.client.dto.auth.AuthResponseDto;
@@ -28,6 +30,7 @@ import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -113,9 +116,15 @@ public class Client {
                 }));
     }
 
-    public void categoriesList(SimpleCallback<List<CategoryDto>> callback) {
+    public void categoriesPage(SimpleCallback<PageDto<CategoryDto>> callback) {
         categoryEndpoint
-                .list(getBearer())
+                .page(getBearer())
+                .enqueue(new ErrorHandlerSimpleCallback<>(callback));
+    }
+
+    public void categoriesPage(SimpleCallback<PageDto<CategoryDto>> callback, Integer page, Integer size) {
+        categoryEndpoint
+                .page(getBearer(), page, size)
                 .enqueue(new ErrorHandlerSimpleCallback<>(callback));
     }
 
@@ -140,14 +149,14 @@ public class Client {
         if (!isCurrentUserActual) {
             userEndpoint.home(getBearer()).enqueue(new Callback<UserDto>() {
                 @Override
-                public void onResponse(Call<UserDto> call, Response<UserDto> response) {
+                public void onResponse(@NonNull Call<UserDto> call, @NonNull Response<UserDto> response) {
                     currentUser = response.body();
                     isCurrentUserActual = true;
                     callback.onResponse(currentUser);
                 }
 
                 @Override
-                public void onFailure(Call<UserDto> call, Throwable t) {
+                public void onFailure(@NonNull Call<UserDto> call, @NonNull Throwable t) {
                     callback.onFailure(t);
                 }
             });
@@ -206,7 +215,9 @@ public class Client {
                         innerCallback.onFailure(call, new ErrorResponseException(response.code(), errorDto));
                         return;
                     }
-                } catch (IOException ignored) {
+                    Log.d("Auction.Client", "Parse exception. Nullable body!");
+                } catch (IOException e) {
+                    Log.d("Auction.Client", "Parse exception!\n" + Log.getStackTraceString(e));
                 }
                 innerCallback.onFailure(call, new ErrorResponseException(response.code()));
             }

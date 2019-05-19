@@ -1,6 +1,5 @@
 package com.sergey.zhuravlev.auction.client.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
@@ -17,19 +16,10 @@ import lombok.Setter;
 public class ErrorDto {
 
     @JsonProperty(value = "timestamp")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private Date timestamp;
-
-    @JsonProperty(value = "status")
-    private Integer status;
-
-    @JsonProperty(value = "error")
-    private String error;
-
     @JsonProperty(value = "message")
     private String message;
-
-    @JsonProperty(value = "path")
-    private String path;
+    @JsonProperty(value = "details")
+    private String details;
 
 }
