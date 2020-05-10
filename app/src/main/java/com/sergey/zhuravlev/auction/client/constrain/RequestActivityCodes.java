@@ -6,4 +6,5 @@ public class RequestActivityCodes {
 
     public static final int IMAGE_SELECT_REQUEST = 1001;
 
+    public static final int REGISTRATION_REQUEST = 1002;
 }

@@ -1,10 +1,18 @@
 package com.sergey.zhuravlev.auction.client.client;
 
+import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sergey.zhuravlev.auction.client.R;
 import com.sergey.zhuravlev.auction.client.api.AccountEndpoint;
 import com.sergey.zhuravlev.auction.client.api.AuthEndpoint;
 import com.sergey.zhuravlev.auction.client.api.CategoryEndpoint;
@@ -20,13 +28,21 @@ import com.sergey.zhuravlev.auction.client.dto.ResponseLotDto;
 import com.sergey.zhuravlev.auction.client.dto.UserDto;
 import com.sergey.zhuravlev.auction.client.dto.auth.AuthResponseDto;
 import com.sergey.zhuravlev.auction.client.dto.auth.LoginRequestDto;
+import com.sergey.zhuravlev.auction.client.dto.auth.SingUpRequestDto;
+import com.sergey.zhuravlev.auction.client.dto.socket.NotificationRequestDto;
+import com.sergey.zhuravlev.auction.client.dto.socket.NotificationResponseDto;
 import com.sergey.zhuravlev.auction.client.exception.ErrorResponseException;
 
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.disposables.Disposable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
@@ -41,13 +57,19 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
+import ua.naiksoftware.stomp.Stomp;
+import ua.naiksoftware.stomp.StompClient;
 
 public class Client {
 
     @Getter
     private static final Client instance = new Client();
 
-    public static final String SERVER_URL = "http://192.168.1.59:8080";
+    public static final String CHANNEL_ID = "AUCTION_CHANNEL_ID";
+
+    public static final String HOST = "192.168.100.44:8080";
+    public static final String SERVER_URL = "http://" + HOST;
+    public static final String SOCKET_URL = "ws://" + HOST + "/example-endpoint/websocket";
     public static final String OAUTH2_REDIRECT_URI = "myandroidapp://oauth2/redirect";
 
     public static final String GOOGLE_AUTH_URL = SERVER_URL + "/oauth2/authorize/google?redirect_uri=" + OAUTH2_REDIRECT_URI;
@@ -65,6 +87,8 @@ public class Client {
     @Getter
     private UserDto currentUser;
     private boolean isCurrentUserActual;
+
+    private StompClient stompClient;
 
     private LotEndpoint lotEndpoints;
     private AuthEndpoint authEndpoint;
@@ -111,6 +135,22 @@ public class Client {
                     @Override
                     public void onFailure(Call<AuthResponseDto> call, Throwable t) {
                         callback.onFailure(call, t);
+                    }
+                }));
+    }
+
+    public void register(SingUpRequestDto singUpRequestDto, final Callback<AuthResponseDto> callback) {
+        authEndpoint
+                .register(singUpRequestDto)
+                .enqueue(new ErrorHandlerCallback<>(new Callback<UserDto>() {
+                    @Override
+                    public void onResponse(Call<UserDto> call, Response<UserDto> response) {
+                        authenticate(singUpRequestDto.getEmail(), singUpRequestDto.getPassword(), callback);
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserDto> call, Throwable t) {
+                        callback.onFailure((Call) call, t);
                     }
                 }));
     }
@@ -194,6 +234,9 @@ public class Client {
     }
 
     private String getBearer() {
+        if (accessToken == null) {
+            return null;
+        }
         return "Bearer " + accessToken;
     }
 

@@ -21,11 +21,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/login_place_holder"
+            android:layout_marginRight="5dp"
             />
 
-        <Space
-            android:layout_width="22dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="|"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
             />
 
         <TextView
@@ -33,6 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/register_place_holder"
+            android:layout_marginLeft="5dp"
             />
 
     </LinearLayout>

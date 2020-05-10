@@ -143,9 +143,7 @@ public class LoginActivity extends AppCompatActivity {
         if (cancel) {
             focusView.requestFocus();
         } else {
-            final ProgressDialog dialog =
-                    ProgressDialog.show(this, "", getString(R.string.loadmessage_signin),
-                            true);
+            final ProgressDialog dialog = ProgressDialog.show(this, "", getString(R.string.progress_dialog_registration), true);
             client.authenticate(username, password, new Callback<AuthResponseDto>() {
                 @Override
                 public void onResponse(@NonNull Call<AuthResponseDto> call, @NonNull Response<AuthResponseDto> response) {

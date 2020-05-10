@@ -2,12 +2,9 @@
     <string name="app_name">Auction Client</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="error_unable_to_connect">Unable to connect</string>
-    <string name="tab_item_categories">Category</string>
+    <string name="tab_item_categories">Categories</string>
     <string name="title_activity_login">Sign in</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Login</string>
@@ -19,9 +16,12 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+    <string name="error_field_size">This field don`t contain %s characters</string>
+    <string name="error_field_smaller_than">This field must contain %d characters</string>
+    <string name="error_field_bigger_than">This field can`t contain more than %d characters</string>
+    <string name="error_password_not_match">Password not match</string>
+
+    <string name="progress_dialog_registration">Please wait</string>
 
     <string name="login_place_holder">Login</string>
     <string name="register_place_holder">Register</string>
@@ -31,6 +31,18 @@
     <string name="password_hint">Password</string>
     <string name="login_activity_title">Log in</string>
     <string name="error_login">Error login</string>
-    <string name="loadmessage_signin">Load...</string>
+
     <string name="title_activity_lots">LotsActivity</string>
+    <string name="title_activity_registration">Registration</string>
+    <string name="api_outdate_message">The API has been updated. Please update the application!</string>
+    <string name="connection_error_message">Connection not available</string>
+    <string name="unknown_error_message">Unknown connection error</string>
+    <string name="username_already_taken_error">Username already in use</string>
+    <string name="email_hint">Email</string>
+    <string name="password_confirm_hint">Confirm Password</string>
+    <string name="firstname_hint">First Name</string>
+    <string name="lastname_hint">Last Name</string>
+    <string name="bio_hint">Bio</string>
+    <string name="ok">Confirm</string>
+    <string name="email_already_taken_error">Email already taken</string>
 </resources>

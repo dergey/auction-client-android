@@ -59,16 +59,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         accountNavigationHeader = navigationView.inflateHeaderView(R.layout.account_header_main);
         navigationView.removeHeaderView(accountNavigationHeader);
 
-        TextView loginView = loginNavigationHeader.findViewById(R.id.login);
+        TextView loginTextView = loginNavigationHeader.findViewById(R.id.login);
+        TextView registerTextView = loginNavigationHeader.findViewById(R.id.register);
         emailView = accountNavigationHeader.findViewById(R.id.emailView);
         nameView = accountNavigationHeader.findViewById(R.id.nameView);
         imageView = accountNavigationHeader.findViewById(R.id.imageView);
 
-        loginView.setOnClickListener(new View.OnClickListener() {
+        loginTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivityForResult(intent, RequestActivityCodes.LOGIN_REQUEST);
+            }
+        });
+
+        registerTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
+                startActivityForResult(intent, RequestActivityCodes.REGISTRATION_REQUEST);
             }
         });
 
@@ -114,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case RequestActivityCodes.LOGIN_REQUEST:
+            case RequestActivityCodes.REGISTRATION_REQUEST:
                 if (resultCode != RESULT_OK) break;
                 Client.getInstance().getCurrentUser(new SimpleCallback<UserDto>() {
                     @Override

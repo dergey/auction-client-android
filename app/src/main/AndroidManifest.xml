@@ -41,6 +41,10 @@
             android:label="@string/title_activity_login" />
 
         <activity
+            android:name=".activity.RegistrationActivity"
+            android:label="@string/title_activity_registration" />
+
+        <activity
             android:name=".activity.LotListActivity"
             android:parentActivityName=".activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" >
