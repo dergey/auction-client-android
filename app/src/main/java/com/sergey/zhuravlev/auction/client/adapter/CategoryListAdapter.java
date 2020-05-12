@@ -68,7 +68,7 @@ public class CategoryListAdapter extends BaseAdapter {
         textView.setText(category.getName());
 
         if (category.getImage() != null) {
-            Client.getInstance().imageDownload(category.getImage(), new Callback<ResponseBody>() {
+            Client.getInstance().getImage(category.getImage(), new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.body() != null) {
@@ -86,7 +86,7 @@ public class CategoryListAdapter extends BaseAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                Client.getInstance().lotPage(category.getName(), null, null, 0, 20,
+                Client.getInstance().getLotsPage(category.getName(), null, null, 0, 20,
                         new Callback<PageDto<ResponseLotDto>>() {
                             @Override
                             public void onResponse(Call<PageDto<ResponseLotDto>> call, Response<PageDto<ResponseLotDto>> response) {

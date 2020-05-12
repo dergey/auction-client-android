@@ -155,7 +155,7 @@ public class Client {
                 }));
     }
 
-    public void categoriesPage(SimpleCallback<PageDto<CategoryDto>> callback) {
+    public void getCategoriesPage(SimpleCallback<PageDto<CategoryDto>> callback) {
         categoryEndpoint
                 .page(getBearer())
                 .enqueue(new ErrorHandlerSimpleCallback<>(callback));
@@ -167,7 +167,7 @@ public class Client {
                 .enqueue(new ErrorHandlerSimpleCallback<>(callback));
     }
 
-    public void imageUpload(Uri filePath, Callback<Void> callback) {
+    public void uploadImage(Uri filePath, Callback<Void> callback) {
         try {
             InputStream fileInputStream = context.getContentResolver().openInputStream(filePath);
             if (fileInputStream != null) {
@@ -180,7 +180,7 @@ public class Client {
         }
     }
 
-    public void imageDownload(String name, Callback<ResponseBody> callback) {
+    public void getImage(String name, Callback<ResponseBody> callback) {
         imageEndpoint.download(name).enqueue(new ErrorHandlerCallback<>(callback));
     }
 
@@ -204,7 +204,7 @@ public class Client {
         }
     }
 
-    public void accountUpdatePhoto(String photo, final SimpleCallback<AccountResponseDto> callback) {
+    public void updateAccountPhoto(String photo, final SimpleCallback<AccountResponseDto> callback) {
         if (currentUser != null && currentUser.getAccount() != null) {
             final AccountResponseDto currentAccount = currentUser.getAccount();
             AccountRequestDto accountRequestDto = new AccountRequestDto(
@@ -229,7 +229,7 @@ public class Client {
         }
     }
 
-    public void lotPage(String category, String owner, String title, Integer page, Integer size, final Callback<PageDto<ResponseLotDto>> callback) {
+    public void getLotsPage(String category, String owner, String title, Integer page, Integer size, final Callback<PageDto<ResponseLotDto>> callback) {
         lotEndpoints.page(getBearer(), category, owner, title, page, size).enqueue(new ErrorHandlerCallback<>(callback));
     }
 

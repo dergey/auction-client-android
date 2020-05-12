@@ -2,9 +2,9 @@ package com.sergey.zhuravlev.auction.client.activity;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,11 +16,9 @@ import com.sergey.zhuravlev.auction.client.constrain.RequestActivityCodes;
 
 import org.springframework.http.HttpHeaders;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,7 +45,7 @@ public class CreateLotActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == RequestActivityCodes.IMAGE_SELECT_REQUEST && resultCode == RESULT_OK) {
             Uri selectedFile = data.getData(); //The uri with the location of the file
-            Client.getInstance().imageUpload(selectedFile, new Callback<Void>() {
+            Client.getInstance().uploadImage(selectedFile, new Callback<Void>() {
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) {
                     if (response.code() == 201) {
@@ -57,14 +55,10 @@ public class CreateLotActivity extends AppCompatActivity {
                             imageListAdapter.notifyDataSetChanged();
                         }
                     } else {
-                        try {
-                            if (response.isSuccessful()) {
-                                Log.e("TEST", "FAIL response code = " + response.code() + '\n' + response.body().toString());
-                            } else {
-                                Log.e("TEST", "FAIL response code = " + response.code() + '\n' + response.errorBody().string());
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        if (response.isSuccessful()) {
+                            Log.e("TEST", "FAIL response code = " + response.code() + '\n' + response.body());
+                        } else {
+                            Log.e("TEST", "FAIL response code = " + response.code() + '\n' + response.errorBody());
                         }
                     }
                 }

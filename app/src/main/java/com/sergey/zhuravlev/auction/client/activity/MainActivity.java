@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case RequestActivityCodes.IMAGE_SELECT_REQUEST:
                 if (resultCode != RESULT_OK) break;
                 Uri selectedFile = data.getData();
-                Client.getInstance().imageUpload(selectedFile, new Callback<Void>() {
+                Client.getInstance().uploadImage(selectedFile, new Callback<Void>() {
                     @Override
                     public void onResponse(@NonNull Call call, @NonNull Response response) {
                         if (response.code() == 201) {
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             if (url != null && !url.isEmpty()) {
                                 name = url.substring(url.lastIndexOf('/') + 1);
                             }
-                            Client.getInstance().accountUpdatePhoto(name, new SimpleCallback<AccountResponseDto>() {
+                            Client.getInstance().updateAccountPhoto(name, new SimpleCallback<AccountResponseDto>() {
                                 @Override
                                 public void onResponse(AccountResponseDto response) {
                                     loadUser(Client.getInstance().getCurrentUser());
@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             nameView.setText(String.format("%s %s", user.getAccount().getFirstname(), user.getAccount().getLastname()));
 
             if (user.getAccount().getPhoto() != null) {
-                Client.getInstance().imageDownload(user.getAccount().getPhoto(), new Callback<ResponseBody>() {
+                Client.getInstance().getImage(user.getAccount().getPhoto(), new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         if (response.body() != null) {
