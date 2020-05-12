@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Интернет-Аукцион</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- Название активити -->
+    <string name="title_activity_login">Вход</string>
+    <string name="action_settings">Настройки</string>
+    <string name="error_unable_to_connect">Нет подключения</string>
+
+    <string name="tab_item_categories">Категории</string>
+    <string name="tab_item_main">Главная</string>
+
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Пароль</string>
+    <string name="action_sign_in">Войти</string>
+    <string name="action_sign_in_with_google">Войти с помощью Google</string>
+    <string name="action_sign_in_short">Войти</string>
+    <string name="error_invalid_email">Недействительный адрес электронной почты</string>
+    <string name="error_invalid_password">Пароль слишком короткий</string>
+    <string name="error_incorrect_password">Недействительный пароль</string>
+    <string name="error_field_required">Обязательное поле</string>
+    <string name="error_field_size">Поле не содержит %s символов</string>
+    <string name="error_field_smaller_than">Это поле должно содержать %d символов</string>
+    <string name="error_field_bigger_than" >Это поле не может содержать больше чем %d символов</string>
+    <string name="error_password_not_match">Пароли не совпадают</string>
+    <string name="username_already_taken_error">Имя пользователя уже используется</string>
+    <string name="email_already_taken_error">Электронная почта уже используется</string>
+
+    <string name="progress_dialog_registration">Пожалуйста подождите</string>
+
+    <string name="login_place_holder">Вход</string>
+    <string name="register_place_holder">Регистрация</string>
+
+
+    <string name="login_hint">Логин</string>
+    <string name="password_hint">Пароль</string>
+    <string name="login_activity_title">Вход</string>
+    <string name="error_login">Неверный логин</string>
+    <string name="title_activity_lots">Лоты</string>
+    <string name="title_activity_registration">Регистрация</string>
+    <string name="api_outdate_message">API обновилось. Пожалуйста, обновите приложение!</string>
+    <string name="connection_error_message">Сервер недоступен</string>
+    <string name="unknown_error_message">Неизвестная ошибка подключения</string>
+
+    <string name="email_hint">Email</string>
+    <string name="password_confirm_hint">Подтвердите пароль</string>
+    <string name="firstname_hint">Имя</string>
+    <string name="lastname_hint">Фамилия</string>
+    <string name="bio_hint">О себе</string>
+    <string name="ok">Подтвердить</string>
+
+    <!-- Пункты бокового меню -->
+    <string name="category_nav_menu_item_title">Каталог</string>
+    <string name="notification_nav_menu_item_title">Уведомления</string>
+    <string name="lots_nav_menu_item_title">Мои лоты</string>
+    <string name="bids_nav_menu_item_title">Ставки</string>
+    <string name="sale_nav_menu_item_title">Продажи</string>
+    <string name="purchase_nav_menu_item_title">Покупки</string>
+
+</resources>

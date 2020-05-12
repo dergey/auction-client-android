@@ -1,38 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:showIn="navigation_view">
-
-    <group android:checkableBehavior="single">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/menu_group_1">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:id="@+id/category_nav_menu_item"
+            android:icon="@drawable/ic_catalog"
+            android:orderInCategory="2"
+            android:title="@string/category_nav_menu_item_title" />
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:id="@+id/notification_nav_menu_item"
+            android:icon="@drawable/ic_notification"
+            android:orderInCategory="2"
+            android:title="@string/notification_nav_menu_item_title" />
     </group>
+    <group android:id="@+id/menu_group_2">
+        <item
+            android:id="@+id/lots_nav_menu_item"
+            android:icon="@drawable/ic_box"
+            android:orderInCategory="3"
+            android:title="@string/lots_nav_menu_item_title" />
 
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
-        </menu>
-    </item>
+        <item
+            android:id="@+id/bids_nav_menu_item"
+            android:icon="@drawable/ic_currency_usd"
+            android:orderInCategory="3"
+            android:title="@string/bids_nav_menu_item_title" />
 
+        <item
+            android:id="@+id/sale_nav_menu_item"
+            android:icon="@drawable/ic_basket_unfill"
+            android:orderInCategory="3"
+            android:title="@string/sale_nav_menu_item_title" />
+
+        <item
+            android:id="@+id/purchase_nav_menu_item"
+            android:icon="@drawable/ic_basket_fill"
+            android:orderInCategory="3"
+            android:title="@string/purchase_nav_menu_item_title" />
+    </group>
 </menu>

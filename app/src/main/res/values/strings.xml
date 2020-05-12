@@ -5,7 +5,9 @@
     <string name="action_settings">Settings</string>
     <string name="error_unable_to_connect">Unable to connect</string>
     <string name="tab_item_categories">Categories</string>
+    <string name="tab_item_main">Main</string>
     <string name="title_activity_login">Sign in</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">Login</string>
     <string name="prompt_password">Password</string>
@@ -45,4 +47,13 @@
     <string name="bio_hint">Bio</string>
     <string name="ok">Confirm</string>
     <string name="email_already_taken_error">Email already taken</string>
+
+    <!-- Nav menu items -->
+    <string name="category_nav_menu_item_title">Categories</string>
+    <string name="notification_nav_menu_item_title">Notification</string>
+    <string name="lots_nav_menu_item_title">My Lots</string>
+    <string name="bids_nav_menu_item_title">Bids</string>
+    <string name="sale_nav_menu_item_title">Sale</string>
+    <string name="purchase_nav_menu_item_title">Purchase</string>
+
 </resources>
