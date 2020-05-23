@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.sergey.zhuravlev.auction.client.fragment.AbstractTabFragment;
 import com.sergey.zhuravlev.auction.client.fragment.CategoriesFragment;
+import com.sergey.zhuravlev.auction.client.fragment.MainFragment;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,17 +16,17 @@ public class TabsFragmentAdapter extends FragmentPagerAdapter {
 
     private Map<Integer, AbstractTabFragment> tabs;
     private CategoriesFragment categoriesFragment;
+    private MainFragment mainFragment;
     private Context context;
 
     public TabsFragmentAdapter(Context context, FragmentManager fm) {
         super(fm);
         this.context = context;
         this.tabs = new HashMap<>();
-        //homeFragment = HomeFragment.getInstance(context, client);
-        //CategoriesFragment categoriesFragment1 = CategoriesFragment.getInstance(context);
+        mainFragment = MainFragment.getInstance(context);
         categoriesFragment = CategoriesFragment.getInstance(context);
-        tabs.put(0, categoriesFragment);
-        //tabs.put(1, categoriesFragment2);
+        tabs.put(0, mainFragment);
+        tabs.put(1, categoriesFragment);
     }
 
     public CategoriesFragment getCategoriesFragment() {
