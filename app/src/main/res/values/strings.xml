@@ -29,7 +29,7 @@
     <string name="register_place_holder">Register</string>
 
 
-    <string name="login_hint">Login</string>
+    <string name="username_hint">Login</string>
     <string name="password_hint">Password</string>
     <string name="login_activity_title">Log in</string>
     <string name="error_login">Error login</string>

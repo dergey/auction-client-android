@@ -1,35 +1,32 @@
 package com.sergey.zhuravlev.auction.client.activity;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.tasks.Task;
 import com.sergey.zhuravlev.auction.client.R;
 import com.sergey.zhuravlev.auction.client.client.Client;
+import com.sergey.zhuravlev.auction.client.constrain.RequestActivityCodes;
 import com.sergey.zhuravlev.auction.client.dto.ErrorDto;
 import com.sergey.zhuravlev.auction.client.dto.auth.AuthResponseDto;
 import com.sergey.zhuravlev.auction.client.exception.ErrorResponseException;
 
-import java.io.IOException;
 import java.net.SocketTimeoutException;
 
 import retrofit2.Call;
@@ -43,16 +40,15 @@ public class LoginActivity extends AppCompatActivity {
     private TextView usernameView;
     private EditText passwordView;
 
+    private GoogleSignInClient googleSignInClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        //toolbar.setTitle(R.string.login_activity_title);
-        //setSupportActionBar(toolbar);
-
         client = Client.getInstance();
+        googleSignInClient = Client.getGoogleSignInClient();
 
         usernameView = findViewById(R.id.email);
         passwordView = findViewById(R.id.password);
@@ -61,8 +57,8 @@ public class LoginActivity extends AppCompatActivity {
         registrationFormButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent intent = new Intent(view.getContext(), RegistrationActivity.class);
-//                startActivityForResult(intent, 1);
+                Intent intent = new Intent(view.getContext(), RegistrationActivity.class);
+                startActivityForResult(intent, 1);
             }
         });
         Button mEmailSignInButton = findViewById(R.id.email_sign_in_button);
@@ -73,45 +69,52 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        Button mGoogleSignInButton = findViewById(R.id.sign_in_with_google_button);
+        ImageButton mGoogleSignInButton = findViewById(R.id.auth_with_google_button);
         mGoogleSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLoginWithGoogle();
+                Intent signInIntent = googleSignInClient.getSignInIntent();
+                startActivityForResult(signInIntent, RequestActivityCodes.GOOGLE_SIGN_IN_REQUEST);
             }
         });
-
-
     }
 
-    private void attemptLoginWithGoogle() {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case RequestActivityCodes.GOOGLE_SIGN_IN_REQUEST:
+                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                handleSignInResult(task);
+                break;
+        }
+    }
+
+    private void handleSignInResult(@NonNull Task<GoogleSignInAccount> completedTask) {
         usernameView.setError(null);
         passwordView.setError(null);
+        client.authenticate(completedTask, new Callback<AuthResponseDto>() {
+            @Override
+            public void onResponse(Call<AuthResponseDto> call, Response<AuthResponseDto> response) {
+                setResult(RESULT_OK, new Intent());
+                finish();
+            }
 
-        AccountManager am = AccountManager.get(this);
-        Bundle options = new Bundle();
-        Account[] account = am.getAccountsByType("com.google");
-        if (account.length > 0) {
-            am.getAuthToken(account[0], "email profile", options, this,
-                    new AccountManagerCallback<Bundle>() {
-                        @Override
-                        public void run(AccountManagerFuture<Bundle> accountManagerFuture) {
-                            try {
-                                String token = accountManagerFuture.getResult().getString(AccountManager.KEY_AUTHTOKEN);
-                                Log.d("TOKEN", " token " + token);
-                            } catch (OperationCanceledException e) {
-                                e.printStackTrace();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            } catch (AuthenticatorException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    },
-                    new Handler());
-        } else {
-            Log.e("OAUTH", "ERROR ACCOUNT NOT FOUND");
-        }
+            @Override
+            public void onFailure(Call<AuthResponseDto> call, Throwable t) {
+                if (t instanceof ErrorResponseException) {
+                    ErrorDto errorDto = ((ErrorResponseException) t).getErrorDto();
+                    serverError(errorDto.getMessage());
+                } else if (t instanceof SocketTimeoutException) {
+                    Toast.makeText(LoginActivity.this, getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
+                } else if (t instanceof UnrecognizedPropertyException) {
+                    Toast.makeText(LoginActivity.this, getString(R.string.api_outdate_message), Toast.LENGTH_LONG).show();
+                    Log.d("Auction.Registration", "Registration exception!\n" + Log.getStackTraceString(t));
+                } else {
+                    Toast.makeText(LoginActivity.this, getString(R.string.unknown_error_message), Toast.LENGTH_LONG).show();
+                    Log.d("Auction.Registration", "Registration exception!\n" + Log.getStackTraceString(t));
+                }
+            }
+        });
     }
 
     private void attemptLogin() {
@@ -159,13 +162,13 @@ public class LoginActivity extends AppCompatActivity {
                         ErrorDto errorDto = ((ErrorResponseException) t).getErrorDto();
                         serverError(errorDto.getMessage());
                     } else if (t instanceof SocketTimeoutException) {
-                        Toast.makeText(LoginActivity.this, "Сервер недоступен", Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivity.this, getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
                     } else if (t instanceof UnrecognizedPropertyException) {
-                        Toast.makeText(LoginActivity.this, "API обновилось. Пожалуйста, обновите приложение!", Toast.LENGTH_LONG).show();
-                        Log.d("Auction.LoginActivity", "Login exception!\n" + Log.getStackTraceString(t));
+                        Toast.makeText(LoginActivity.this, getString(R.string.api_outdate_message), Toast.LENGTH_LONG).show();
+                        Log.d("Auction.Registration", "Registration exception!\n" + Log.getStackTraceString(t));
                     } else {
-                        Toast.makeText(LoginActivity.this, "Неизвестная ошибка подключения", Toast.LENGTH_LONG).show();
-                        Log.d("Auction.LoginActivity", "Login exception!\n" + Log.getStackTraceString(t));
+                        Toast.makeText(LoginActivity.this, getString(R.string.unknown_error_message), Toast.LENGTH_LONG).show();
+                        Log.d("Auction.Registration", "Registration exception!\n" + Log.getStackTraceString(t));
                     }
                     dialog.dismiss();
                 }

@@ -37,7 +37,8 @@
     <string name="register_place_holder">Регистрация</string>
 
 
-    <string name="login_hint">Логин</string>
+    <string name="username_hint">Логин</string>
+    <string name="email_hint">Email</string>
     <string name="password_hint">Пароль</string>
     <string name="login_activity_title">Вход</string>
     <string name="error_login">Неверный логин</string>
@@ -47,7 +48,6 @@
     <string name="connection_error_message">Сервер недоступен</string>
     <string name="unknown_error_message">Неизвестная ошибка подключения</string>
 
-    <string name="email_hint">Email</string>
     <string name="password_confirm_hint">Подтвердите пароль</string>
     <string name="firstname_hint">Имя</string>
     <string name="lastname_hint">Фамилия</string>

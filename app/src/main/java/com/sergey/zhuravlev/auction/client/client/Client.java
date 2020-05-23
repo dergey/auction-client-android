@@ -1,17 +1,18 @@
 package com.sergey.zhuravlev.auction.client.client;
 
-import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.sergey.zhuravlev.auction.client.R;
 import com.sergey.zhuravlev.auction.client.api.AccountEndpoint;
 import com.sergey.zhuravlev.auction.client.api.AuthEndpoint;
@@ -27,22 +28,16 @@ import com.sergey.zhuravlev.auction.client.dto.PageDto;
 import com.sergey.zhuravlev.auction.client.dto.ResponseLotDto;
 import com.sergey.zhuravlev.auction.client.dto.UserDto;
 import com.sergey.zhuravlev.auction.client.dto.auth.AuthResponseDto;
+import com.sergey.zhuravlev.auction.client.dto.auth.AuthorizationCodeDto;
 import com.sergey.zhuravlev.auction.client.dto.auth.LoginRequestDto;
 import com.sergey.zhuravlev.auction.client.dto.auth.SingUpRequestDto;
-import com.sergey.zhuravlev.auction.client.dto.socket.NotificationRequestDto;
-import com.sergey.zhuravlev.auction.client.dto.socket.NotificationResponseDto;
 import com.sergey.zhuravlev.auction.client.exception.ErrorResponseException;
 
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.disposables.Disposable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
@@ -57,7 +52,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
-import ua.naiksoftware.stomp.Stomp;
 import ua.naiksoftware.stomp.StompClient;
 
 public class Client {
@@ -65,16 +59,14 @@ public class Client {
     @Getter
     private static final Client instance = new Client();
 
+    @Getter
+    private static GoogleSignInClient googleSignInClient;
+
     public static final String CHANNEL_ID = "AUCTION_CHANNEL_ID";
 
     public static final String HOST = "192.168.100.44:8080";
     public static final String SERVER_URL = "http://" + HOST;
     public static final String SOCKET_URL = "ws://" + HOST + "/example-endpoint/websocket";
-    public static final String OAUTH2_REDIRECT_URI = "myandroidapp://oauth2/redirect";
-
-    public static final String GOOGLE_AUTH_URL = SERVER_URL + "/oauth2/authorize/google?redirect_uri=" + OAUTH2_REDIRECT_URI;
-    public static final String FACEBOOK_AUTH_URL = SERVER_URL + "/oauth2/authorize/facebook?redirect_uri=" + OAUTH2_REDIRECT_URI;
-    public static final String GITHUB_AUTH_URL = SERVER_URL + "/oauth2/authorize/github?redirect_uri=" + OAUTH2_REDIRECT_URI;
 
     @Setter
     @Getter
@@ -97,8 +89,10 @@ public class Client {
     private AccountEndpoint accountEndpoint;
     private CategoryEndpoint categoryEndpoint;
 
-    public void init(Context context) {
-        instance.setContext(context);
+
+
+    public void init(Activity activity) {
+        this.context = activity;
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.cookieJar(new DefaultCookieJar());
@@ -119,6 +113,58 @@ public class Client {
         imageEndpoint = retrofit.create(ImageEndpoint.class);
         accountEndpoint = retrofit.create(AccountEndpoint.class);
         categoryEndpoint = retrofit.create(CategoryEndpoint.class);
+
+        // Google Sing-Up
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestServerAuthCode(context.getString(R.string.default_web_client_id))
+                .requestProfile()
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(context, gso);
+        googleSignInClient.silentSignIn().addOnCompleteListener(
+                activity,
+                new OnCompleteListener<GoogleSignInAccount>() {
+                    @Override
+                    public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
+                        authenticate(task, new Callback<AuthResponseDto>() {
+                            @Override
+                            public void onResponse(Call<AuthResponseDto> call, Response<AuthResponseDto> response) {
+                            }
+
+                            @Override
+                            public void onFailure(Call<AuthResponseDto> call, Throwable t) {
+                            }
+                        });
+                    }
+                });
+    }
+
+    public boolean isAuthorized() {
+        return accessToken != null;
+    }
+
+    public void authenticate(Task<GoogleSignInAccount> task, final Callback<AuthResponseDto> callback) {
+        try {
+            GoogleSignInAccount account = task.getResult(ApiException.class);
+            String accessToken = account.getServerAuthCode();
+            authEndpoint
+                    .authenticate("google", new AuthorizationCodeDto(accessToken))
+                    .enqueue(new ErrorHandlerCallback<>(new Callback<AuthResponseDto>() {
+                        @Override
+                        public void onResponse(Call<AuthResponseDto> call, Response<AuthResponseDto> response) {
+                            Client.this.accessToken = response.body().getAccessToken();
+                            isCurrentUserActual = false;
+                            callback.onResponse(call, response);
+                        }
+
+                        @Override
+                        public void onFailure(Call<AuthResponseDto> call, Throwable t) {
+                            callback.onFailure(call, t);
+                        }
+                    }));
+        } catch (ApiException e) {
+            Log.w("Auction.Login", "handleSignInResult:error", e);
+        }
     }
 
     public void authenticate(String email, String password, final Callback<AuthResponseDto> callback) {
