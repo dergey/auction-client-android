@@ -1,9 +1,12 @@
 package com.sergey.zhuravlev.auction.client.client;
 
+@FunctionalInterface
 public interface SimpleCallback<T> {
 
     void onResponse(T response);
 
-    void onFailure(Throwable t);
+    default void onFailure(Throwable t) {
+
+    }
 
 }

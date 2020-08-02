@@ -14,16 +14,22 @@ import android.widget.Toast;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.sergey.zhuravlev.auction.client.R;
 import com.sergey.zhuravlev.auction.client.client.Client;
+import com.sergey.zhuravlev.auction.client.constrain.RequestActivityCodes;
+import com.sergey.zhuravlev.auction.client.dto.AccountRequestDto;
 import com.sergey.zhuravlev.auction.client.dto.ErrorDto;
+import com.sergey.zhuravlev.auction.client.dto.UserDto;
 import com.sergey.zhuravlev.auction.client.dto.auth.AuthResponseDto;
 import com.sergey.zhuravlev.auction.client.dto.auth.SingUpRequestDto;
 import com.sergey.zhuravlev.auction.client.exception.ErrorResponseException;
 
 import java.net.SocketTimeoutException;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.sergey.zhuravlev.auction.client.constrain.RequestActivityCodes.ACCOUNT_REGISTRATION_REQUEST;
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -36,8 +42,11 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private EditText usernameEdit;
 
+    private int requestCode = 0;
+
     private boolean haveError() {
         boolean containError = false;
+        boolean accountRegistration = requestCode == ACCOUNT_REGISTRATION_REQUEST;
         if (TextUtils.isEmpty(this.usernameEdit.getText().toString())) {
             this.usernameEdit.setError(getString(R.string.error_field_required));
             this.usernameEdit.requestFocus();
@@ -51,23 +60,23 @@ public class RegistrationActivity extends AppCompatActivity {
             this.usernameEdit.requestFocus();
             containError = true;
         }
-        if (TextUtils.isEmpty(this.passwordEdit.getText().toString())) {
+        if (!accountRegistration && TextUtils.isEmpty(this.passwordEdit.getText().toString())) {
             this.passwordEdit.setError(getString(R.string.error_field_required));
             this.passwordEdit.requestFocus();
-        } else if (this.passwordEdit.getText().toString().length() < 6) {
+        } else if (!accountRegistration && this.passwordEdit.getText().toString().length() < 6) {
             this.passwordEdit.setError(getString(R.string.error_field_smaller_than, 6));
             this.passwordEdit.requestFocus();
             containError = true;
-        } else if (this.passwordEdit.getText().toString().length() > 32) {
+        } else if (!accountRegistration && this.passwordEdit.getText().toString().length() > 32) {
             this.passwordEdit.setError(getString(R.string.error_field_bigger_than, 32));
             this.passwordEdit.requestFocus();
             containError = true;
-        } else if (!this.passwordEdit.getText().toString().equals(this.confirmPasswordEdit.getText().toString())) {
+        } else if (!accountRegistration && !this.passwordEdit.getText().toString().equals(this.confirmPasswordEdit.getText().toString())) {
             this.confirmPasswordEdit.setError(getString(R.string.error_password_not_match));
             this.confirmPasswordEdit.requestFocus();
             containError = true;
         }
-        if (TextUtils.isEmpty(this.emailEdit.getText().toString())) {
+        if (!accountRegistration && TextUtils.isEmpty(this.emailEdit.getText().toString())) {
             this.emailEdit.setError(getString(R.string.error_field_required));
             this.emailEdit.requestFocus();
             containError = true;
@@ -85,7 +94,7 @@ public class RegistrationActivity extends AppCompatActivity {
         return containError;
     }
 
-    private SingUpRequestDto parseForm() {
+    private SingUpRequestDto parseSingUpForm() {
         SingUpRequestDto singUpRequestDto = new SingUpRequestDto(this.emailEdit.getText().toString(), this.passwordEdit.getText().toString());
         singUpRequestDto.setUsername(this.usernameEdit.getText().toString());
         singUpRequestDto.setFirstname(this.firstnameEdit.getText().toString());
@@ -93,6 +102,16 @@ public class RegistrationActivity extends AppCompatActivity {
         singUpRequestDto.setBio(this.aboutMeEdit.getText().toString());
         Log.d("Auction.Registration", "User " + singUpRequestDto.toString());
         return singUpRequestDto;
+    }
+
+    private AccountRequestDto parseAccountForm() {
+        AccountRequestDto accountRequestDto = new AccountRequestDto();
+        accountRequestDto.setUsername(this.usernameEdit.getText().toString());
+        accountRequestDto.setFirstname(this.firstnameEdit.getText().toString());
+        accountRequestDto.setLastname(this.lastnameEdit.getText().toString());
+        accountRequestDto.setBio(this.aboutMeEdit.getText().toString());
+        Log.d("Auction.Registration", "Account " + accountRequestDto.toString());
+        return accountRequestDto;
     }
 
     void initComponents() {
@@ -108,8 +127,23 @@ public class RegistrationActivity extends AppCompatActivity {
     protected void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
         setContentView(R.layout.activity_registration);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         initComponents();
+        extractExtras();
+    }
+
+    private void extractExtras() {
+        int requestCode = getIntent().getExtras().getInt(RequestActivityCodes.REQUEST_ACTIVITY_KEY);
+        this.requestCode = requestCode;
+        if (requestCode == ACCOUNT_REGISTRATION_REQUEST) {
+            UserDto userDto = (UserDto) getIntent().getExtras().getParcelable("user");
+            emailEdit.setText(userDto.getEmail());
+            emailEdit.setEnabled(false);
+            passwordEdit.setEnabled(false);
+            passwordEdit.setText("123456");
+            confirmPasswordEdit.setEnabled(false);
+            confirmPasswordEdit.setText("123456");
+        }
     }
 
     public boolean onCreateOptionsMenu(Menu paramMenu) {
@@ -122,34 +156,43 @@ public class RegistrationActivity extends AppCompatActivity {
 
         if (id == R.id.ok) {
             if (!haveError()) {
-                ProgressDialog dialog = ProgressDialog.show(this, "", getString(R.string.progress_dialog_registration), true);
-                Client.getInstance().register(parseForm(), new Callback<AuthResponseDto>() {
-                    @Override
-                    public void onResponse(Call<AuthResponseDto> call, Response<AuthResponseDto> response) {
-                        dialog.dismiss();
-                        setResult(RESULT_OK, new Intent());
-                        finish();
-                    }
+                switch (requestCode) {
+                    case ACCOUNT_REGISTRATION_REQUEST:
+                        Client.getInstance().createUpdateAccount(parseAccountForm(), (response) -> {
+                            setResult(RESULT_OK, new Intent());
+                            finish();
+                        });
+                        break;
+                    default:
+                        ProgressDialog dialog = ProgressDialog.show(this, "", getString(R.string.progress_dialog_registration), true);
+                        Client.getInstance().register(parseSingUpForm(), new Callback<AuthResponseDto>() {
+                            @Override
+                            public void onResponse(Call<AuthResponseDto> call, Response<AuthResponseDto> response) {
+                                dialog.dismiss();
+                                setResult(RESULT_OK, new Intent());
+                                finish();
+                            }
 
-                    @Override
-                    public void onFailure(Call<AuthResponseDto> call, Throwable t) {
-                        if (t instanceof ErrorResponseException) {
-                            ErrorDto errorDto = ((ErrorResponseException) t).getErrorDto();
-                            serverError(errorDto.getMessage());
-                            Log.d("Auction.Registration", "Registration exception!"  + errorDto.getMessage());
-                        } else if (t instanceof SocketTimeoutException) {
-                            Toast.makeText(RegistrationActivity.this, getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
-                        } else if (t instanceof UnrecognizedPropertyException) {
-                            Toast.makeText(RegistrationActivity.this, getString(R.string.api_outdate_message), Toast.LENGTH_LONG).show();
-                            Log.d("Auction.Registration", "Registration exception!\n" + Log.getStackTraceString(t));
-                        } else {
-                            Toast.makeText(RegistrationActivity.this, getString(R.string.unknown_error_message), Toast.LENGTH_LONG).show();
-                            Log.d("Auction.Registration", "Registration exception!\n" + Log.getStackTraceString(t));
-                        }
-                        dialog.dismiss();
-                    }
-                });
-                return true;
+                            @Override
+                            public void onFailure(Call<AuthResponseDto> call, Throwable t) {
+                                if (t instanceof ErrorResponseException) {
+                                    ErrorDto errorDto = ((ErrorResponseException) t).getErrorDto();
+                                    serverError(errorDto.getMessage());
+                                    Log.d("Auction.Registration", "Registration exception!" + errorDto.getMessage());
+                                } else if (t instanceof SocketTimeoutException) {
+                                    Toast.makeText(RegistrationActivity.this, getString(R.string.connection_error_message), Toast.LENGTH_LONG).show();
+                                } else if (t instanceof UnrecognizedPropertyException) {
+                                    Toast.makeText(RegistrationActivity.this, getString(R.string.api_outdate_message), Toast.LENGTH_LONG).show();
+                                    Log.d("Auction.Registration", "Registration exception!\n" + Log.getStackTraceString(t));
+                                } else {
+                                    Toast.makeText(RegistrationActivity.this, getString(R.string.unknown_error_message), Toast.LENGTH_LONG).show();
+                                    Log.d("Auction.Registration", "Registration exception!\n" + Log.getStackTraceString(t));
+                                }
+                                dialog.dismiss();
+                            }
+                        });
+                        return true;
+                }
             }
         } else {
             setResult(RESULT_CANCELED, new Intent());

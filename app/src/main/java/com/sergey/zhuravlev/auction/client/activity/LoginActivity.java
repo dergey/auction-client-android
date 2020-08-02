@@ -86,6 +86,12 @@ public class LoginActivity extends AppCompatActivity {
                 Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
                 handleSignInResult(task);
                 break;
+            case RequestActivityCodes.ACCOUNT_REGISTRATION_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    setResult(RESULT_OK, new Intent());
+                    finish();
+                }
+                break;
         }
     }
 
@@ -95,8 +101,17 @@ public class LoginActivity extends AppCompatActivity {
         client.authenticate(completedTask, new Callback<AuthResponseDto>() {
             @Override
             public void onResponse(Call<AuthResponseDto> call, Response<AuthResponseDto> response) {
-                setResult(RESULT_OK, new Intent());
-                finish();
+                client.getCurrentUser(userDto -> {
+                    if (userDto.isIncomplete()) {
+                        Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
+                        intent.putExtra(RequestActivityCodes.REQUEST_ACTIVITY_KEY, RequestActivityCodes.ACCOUNT_REGISTRATION_REQUEST);
+                        intent.putExtra("user", userDto);
+                        startActivityForResult(intent, RequestActivityCodes.ACCOUNT_REGISTRATION_REQUEST);
+                    } else {
+                        setResult(RESULT_OK, new Intent());
+                        finish();
+                    }
+                });
             }
 
             @Override

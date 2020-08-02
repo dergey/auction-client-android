@@ -1,10 +1,16 @@
 package com.sergey.zhuravlev.auction.client.client;
 
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -31,13 +37,20 @@ import com.sergey.zhuravlev.auction.client.dto.auth.AuthResponseDto;
 import com.sergey.zhuravlev.auction.client.dto.auth.AuthorizationCodeDto;
 import com.sergey.zhuravlev.auction.client.dto.auth.LoginRequestDto;
 import com.sergey.zhuravlev.auction.client.dto.auth.SingUpRequestDto;
+import com.sergey.zhuravlev.auction.client.dto.socket.NotificationRequestDto;
+import com.sergey.zhuravlev.auction.client.dto.socket.NotificationResponseDto;
 import com.sergey.zhuravlev.auction.client.exception.ErrorResponseException;
 
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.disposables.Disposable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
@@ -52,6 +65,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
+import ua.naiksoftware.stomp.Stomp;
 import ua.naiksoftware.stomp.StompClient;
 
 public class Client {
@@ -89,7 +103,17 @@ public class Client {
     private AccountEndpoint accountEndpoint;
     private CategoryEndpoint categoryEndpoint;
 
+    private static final Callback EMPTY_CALLBACK = new Callback<Object>() {
+        @Override
+        public void onResponse(Call<Object> call, Response<Object> response) {
+        }
 
+        @Override
+        public void onFailure(Call<Object> call, Throwable t) {
+        }
+    };
+
+    private final AtomicInteger notificationIdsIncrementor = new AtomicInteger(0);
 
     public void init(Activity activity) {
         this.context = activity;
@@ -121,15 +145,8 @@ public class Client {
                 .requestEmail()
                 .build();
         googleSignInClient = GoogleSignIn.getClient(context, gso);
-        googleSignInClient.silentSignIn().addOnCompleteListener(
-                activity,
-                new OnCompleteListener<GoogleSignInAccount>() {
-                    @Override
-                    public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
-                        authenticate(task, new Callback<AuthResponseDto>() {
-                            @Override
-                            public void onResponse(Call<AuthResponseDto> call, Response<AuthResponseDto> response) {
-                            }
+        googleSignInClient.silentSignIn().addOnCompleteListener(activity, task -> authenticate(task, EMPTY_CALLBACK));
+    }
 
                             @Override
                             public void onFailure(Call<AuthResponseDto> call, Throwable t) {
@@ -197,6 +214,23 @@ public class Client {
                     @Override
                     public void onFailure(Call<UserDto> call, Throwable t) {
                         callback.onFailure((Call) call, t);
+                    }
+                }));
+    }
+
+    public void createUpdateAccount(AccountRequestDto accountRequestDto, final SimpleCallback<AccountResponseDto> callback) {
+        accountEndpoint
+                .createUpdate(getBearer(), accountRequestDto)
+                .enqueue(new ErrorHandlerCallback<>(new Callback<AccountResponseDto>() {
+                    @Override
+                    public void onResponse(Call<AccountResponseDto> call, Response<AccountResponseDto> response) {
+                        currentUser.setAccount(response.body());
+                        callback.onResponse(response.body());
+                    }
+
+                    @Override
+                    public void onFailure(Call<AccountResponseDto> call, Throwable t) {
+                        callback.onFailure(t);
                     }
                 }));
     }
