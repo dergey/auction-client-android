@@ -37,13 +37,7 @@
             android:label="@string/title_activity_registration" />
 
         <activity
-            android:name=".activity.LotListActivity"
-            android:parentActivityName=".activity.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.sergey.zhuravlev.auction.client.activity.MainActivity" />
-        </activity>
+            android:name=".activity.LotListActivity" />
 
     </application>
 
